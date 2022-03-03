@@ -7,12 +7,12 @@ const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
  
 /**
- * Register a new user
- *
- * POST /register
- */
- const register = async (req, res) => {
-	// check for any validation errors
+* Register a new user
+*
+* POST /register
+*/
+const register = async (req, res) => {
+    // check for any validation errors
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).send({ status: 'fail', data: errors.array() });
