@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
 /** Länkar till models */
 //router.use('/albums', require('./albums'));
 //router.use('/photos', require('./photos'));
-router.use('/profile', auth.validateJwtToken, require('./profile')); // funktionen heter validateJwtToken och modulen heter auth
+//router.use('/profile', auth.validateJwtToken, require('./profile')); // funktionen heter validateJwtToken och modulen heter auth
 
 // login a user and get a JWT 
 // router.post('/login', authController.login);
