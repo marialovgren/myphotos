@@ -4,3 +4,10 @@
     "first_name": "Maria",
     "last_name": "Lövgren"
 }
+
+{
+    "email": "anna@mail.com",
+    "password": "hejhej",
+    "first_name": "Anna",
+    "last_name": "Svensson"
+}
