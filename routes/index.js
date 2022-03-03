@@ -15,7 +15,7 @@ router.get('/', (req, res, next) => {
 router.use('/profile', auth.validateJwtToken, require('./profile')); // funktionen heter validateJwtToken och modulen heter auth
 
 // login a user and get a JWT 
-router.post('/login', authController.login);
+// router.post('/login', authController.login);
 
 // register a new user
 router.post('/register', userValidationRules.createRules, authController.register);
