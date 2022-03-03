@@ -13,7 +13,7 @@ router.post('/albums', albumValidationRules.addAlbumRules, albumController.addAl
 
 /* Uppdatera ett album */
 // PUT /albums/:albumId
-router.put('/albums/:albumId', albumValidationRules.updateRules, albumController.update);
+router.put('/albums/:albumId', albumValidationRules.updateRules, albumController.updateAlbum);
 
 
 module.exports = router;
