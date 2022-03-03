@@ -8,8 +8,6 @@ const jwt = require('jsonwebtoken');
  * HTTP Basic authentication middlewear
  */
  const basic = async (req, res, next) => {
-    debug("Hello from auth.basic");
-
     // make sure Authorization header exists, otherwise bail
     if (!req.headers.authorization) {
         debug("Authorization header missing");
@@ -101,3 +99,4 @@ module.exports = {
     basic,
     validateJwtToken
 };
+

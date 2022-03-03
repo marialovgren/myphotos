@@ -10,12 +10,13 @@ router.get('/', (req, res, next) => {
 });
 
 /** Länkar till models */
-//router.use('/albums', require('./albums'));
+router.use('/album', auth.validateJwtToken, require('./album'));
 //router.use('/photos', require('./photos'));
-//router.use('/profile', auth.validateJwtToken, require('./profile')); // funktionen heter validateJwtToken och modulen heter auth
+// ** DENNA MÅSTE FUNKA FÖR ATT AOUTES/ALBUM SKA FUNKA         
+//router.use('/user', auth.validateJwtToken, require('./user')); 
 
 // login a user and get a JWT 
-// router.post('/login', authController.login);
+router.post('/login', authController.login);
 
 // register a new user
 router.post('/register', userValidationRules.createRules, authController.register);
