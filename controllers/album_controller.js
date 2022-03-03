@@ -2,129 +2,128 @@
  * Album Controller
  */
 
- const bcrypt = require('bcrypt');
  const debug = require('debug')('books:album_controller');
- const { matchedData, validationResult} = require('express-validator');
- const { User } = require('../models');
+ const { matchedData, validationResult } = require('express-validator');
+ const models = require('../models');
  
-/** 
-* Hämta den inloggade användarens album
-*
-* GET /albums
-*/
-const getAlbums = async (req, res) => {
+ /**
+  * Hämta alla album
+  *
+  * GET /albums
+  */
+ const index = async (req, res) => {
+	 const all_albums = await models.Album.fetchAll();
  
-    const user = await User.fetchById(req.user.user_id, { withRelated: ['albums'] });
+	 res.send({
+		 status: 'success',
+		 data: {
+			 album: all_albums
+		 }
+	 });
+ }
  
-    res.status(200).send({
-        status: 'success',
-        data: {
-            albums: user.related('albums'),
-        }
-    });
-}
+ /**
+  * Hämta ett album 
+  * GET /:albumId
+  */
+ const show = async (req, res) => {
+	 const album = await new models.Album({ id: req.params.albumId })
+		 .fetch({ withRelated: ['users'] });
  
-/**
-* Add an album to the authenticated user
-*
-* POST /albums
-*/
-const addAlbum = async (req, res) => {
-    const user = await User.fetchById(req.user.user_id);
+	 res.send({
+		 status: 'success',
+		 data: {
+			 album,
+		 }
+	 });
+ }
  
-    // check for any validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).send({ status: 'fail', data: errors.array() });
-    }
+ /**
+  * Lägg till ett nytt album
+  *
+  * POST /albums
+  */
+ const store = async (req, res) => {
+	 // check for any validation errors
+	 const errors = validationResult(req);
+	 if (!errors.isEmpty()) {
+		 return res.status(422).send({ status: 'fail', data: errors.array() });
+	 }
  
-    // get only the validated data from the request
-    const validData = matchedData(req);
+	 // get only the validated data from the request
+	 const validData = matchedData(req);
  
-    // lazy-load book relationship
-    await user.load('albums');
+	 try {
+		 const album = await new models.Album(validData).save();
+		 debug("Created new album successfully: %O", album);
  
-    // get the user's albums
-    const albums = user.related('albums');
+		 res.send({
+			 status: 'success',
+			 data: {
+				 album,
+			 },
+		 });
  
-    // check if album is already in the user's list of albums
-    const existing_album = albums.find(album => album.id == validData.album_id);
+	 } catch (error) {
+		 res.status(500).send({
+			 status: 'error',
+			 message: 'Exception thrown in database when creating a new Album.',
+		 });
+		 throw error;
+	 }
+ }
  
-    // if it already exists, bail
-    if (existing_album) {
-        return res.send({
-            status: 'fail',
-            data: 'Album already exists.',
-        });
-    }
+ /**
+  * Update a specific resource
+  *
+  * PUT /albums/:albumId
+  */
+ const update = async (req, res) => {
+	 const albumId = req.params.albumId;
  
-    try {
-        const result = await user.albums().attach(validData.album_id);
-        debug("Added album to user successfully: %O", result);
+	 // make sure book exists
+	 const album = await new models.Album({ id: albumId }).fetch({ require: false });
+	 if (!album) {
+		 debug("Album to update was not found. %o", { id: albumId });
+		 res.status(404).send({
+			 status: 'fail',
+			 data: 'Album Not Found',
+		 });
+		 return;
+	 }
  
-        res.send({
-            status: 'success',
-            data: null,
-        });
+	 // check for any validation errors
+	 const errors = validationResult(req);
+	 if (!errors.isEmpty()) {
+		 return res.status(422).send({ status: 'fail', data: errors.array() });
+	 }
  
-    } catch (error) {
-        res.status(500).send({
-            status: 'error',
-            message: 'Exception thrown in database when adding an album to a user.',
-        });
-        throw error;
-}}
-
-/** 
-* Uppdatera den inloggade användarens album
-*
-* PUT /albums/:albumId
-*/
-const updateAlbum = async (req, res) => {
-    // kolla efter fel 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-         return res.status(422).send({ status: 'fail', data: errors.array() });
-    }
+	 // get only the validated data from the request
+	 const validData = matchedData(req);
  
-    const validData = matchedData(req); // endast den data jag efterfrågat sparas i databasen.
-     
-    // update the users album but only if they have sent us a new title
-    if (validData.title) {
-        try {
-            validData.title = await bcrypt(validData.title);
-        } catch (error) {
-            res.status(500).send({
-                status: 'error',
-                message: 'Exception thrown in database when updating an album.',
-            });
-            throw error;
-    } 
+	 try {
+		 const updatedAlbum = await album.save(validData);
+		 debug("Updated album successfully: %O", updatedAlbum);
  
-    try {
-        const album = await Album.fetchById(req.user.user_id);
+		 res.send({
+			 status: 'success',
+			 data: {
+				 album,
+			 },
+		 });
  
-        const updatedAlbum = await album.save(validData);
-        debug("Updated album successfully: %O", updatedAlbum);
+	 } catch (error) {
+		 res.status(500).send({
+			 status: 'error',
+			 message: 'Exception thrown in database when updating a new album.',
+		 });
+		 throw error;
+	 }
+ }
  
-        res.send({
-            status: 'success',
-            data: {
-                album: updatedAlbum,
-            },
-        });
- 
-    } catch (error) {
-        res.status(500).send({
-            status: 'error',
-            message: 'Exception thrown in database when updating an album.',
-        });
-        throw error;
-    }
-}}
-
  module.exports = {
-    getAlbums,
-    addAlbum,
-    updateAlbum,
-}
+	 index,
+	 show,
+	 store,
+	 update,
+ }
