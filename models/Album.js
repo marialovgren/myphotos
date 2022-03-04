@@ -10,7 +10,7 @@
         }, 
         tableName: 'albums',
         photos() {
-            return this.hasMany('Photos');
+            return this.hasMany('Photo');
         }
     });
 };
