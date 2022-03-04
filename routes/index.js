@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middlewears/auth');
 const authController = require('../controllers/auth_controller');
-const userValidationRules = require('../validation/user');
+const userValidationRules = require('../validation/user_validation');
 
 router.get('/', (req, res, next) => {
     res.send({
@@ -25,5 +25,5 @@ router.use('/albums', require('./album_route'));
 // ** DENNA MÅSTE FUNKA FÖR ATT ROUTES/ALBUM SKA FUNKA         
 //router.use('/user', auth.validateJwtToken, require('./user')); 
 
-
 module.exports = router;
+
