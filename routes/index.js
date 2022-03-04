@@ -18,7 +18,8 @@ router.post('/register', userValidationRules.createRules, authController.registe
 router.post('/login', authController.login);
 
 /** Länkar till models */
-router.use('/albums', require('./album'));
+router.use(auth.validateJwtToken);
+router.use('/albums', require('./album_route'));
 //router.use('/album', auth.validateJwtToken, require('./album'));
 //router.use('/photos', require('./photos'));
 // ** DENNA MÅSTE FUNKA FÖR ATT ROUTES/ALBUM SKA FUNKA         
