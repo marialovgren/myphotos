@@ -1,42 +1,58 @@
 /**
- * Album Controller
- */
+* Album Controller
+*/
 
- const debug = require('debug')('books:album_controller');
- const { matchedData, validationResult } = require('express-validator');
- const models = require('../models');
+const debug = require('debug')('books:album_controller');
+const { matchedData, validationResult } = require('express-validator');
+const models = require('../models');
+const User = require('../models/User');
  
- /**
-  * Hämta alla album
-  *
-  * GET /albums
-  */
- const index = async (req, res) => {
-	 const all_albums = await models.Album.fetchAll();
+/**
+* Hämta alla album till den inloggade användaren 
+*
+* GET /albums
+*/
+const getAlbums = async (req, res) => {
+	const user = await User.fetchById(req.user.user_id, {
+		withRelated: ['albums'] });
  
-	 res.send({
+	res.status(200).send({
 		 status: 'success',
 		 data: {
-			 albums: all_albums
+			 albums: user.related('albums'),
 		 }
 	 });
- }
+ };
  
- /**
-  * Hämta ett album 
-  * GET /:albumId
-  */
- const show = async (req, res) => {
-	 const album = await new models.Album({ id: req.params.albumId })
-		 .fetch({ withRelated: ['users'] });
+/**
+* Hämta ett specifikt album 
+* GET /albums/:albumId
+*/
+const showAlbum = async (req, res) => {
+	const user = await User.fetchById(req.user.user_id, { withRelated: ['albums'] });
+
+	// Hämta användarens alla album
+	const allAlbums = user.related('albums');
+
+	// Plocka ut ett specifikt album genom att skriva ex. /1 i sökvägen för att få ut album med id 1.
+	const albumWithSpecificId = albums.find(album => album.id == validData.album_id);
+
+	if (!albumWithSpecificId) {
+		return res.status(404).send({
+			status: 'fail',
+			message: 'Album with that ID was not found',
+		});
+	}
+
+	// Här ska jag skriva kod för att kunna visa foton som tillhör albumet med det efterfrågade ID
  
-	 res.send({
-		 status: 'success',
-		 data: {
-			 album,
-		 }
+	res.send({
+		status: 'success',
+		data: {
+			album: albumWithSpecificId,
+		},
 	 });
- }
+ };
  
  /**
   * Lägg till ett nytt album
@@ -122,8 +138,5 @@
  }
  
  module.exports = {
-	 index,
-	 show,
-	 store,
-	 update,
+	 getAlbums,
  }

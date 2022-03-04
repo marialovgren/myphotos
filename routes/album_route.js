@@ -19,4 +19,7 @@ router.post('/', albumValidationRules.createRules, albumController.addAlbum);
 // PUT /albums/:albumId exempelvis /albums/1
 router.put('/:albumId', albumValidationRules.updateRules, albumController.updateAlbum);
 
+/* Lägg till ett foto i ett album */
+// POST /albums/:albumId/photos
+
 module.exports = router;
