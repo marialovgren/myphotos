@@ -2,10 +2,9 @@
 * Album Controller
 */
 
-const debug = require('debug')('books:album_controller');
+const debug = require('debug')('books:album_controller'); // ska det stå books????
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
-const User = require('../models/User');
  
 /**
 * Hämta alla album till den inloggade användaren 
@@ -13,7 +12,7 @@ const User = require('../models/User');
 * GET /albums
 */
 const getAlbums = async (req, res) => {
-	const user = await User.fetchById(req.user.user_id, {
+	const user = await models.User.fetchById(req.user.user_id, {
 		withRelated: ['albums'] });
  
 	res.status(200).send({
@@ -29,13 +28,13 @@ const getAlbums = async (req, res) => {
 * GET /albums/:albumId
 */
 const showAlbum = async (req, res) => {
-	const user = await User.fetchById(req.user.user_id, { withRelated: ['albums'] });
+	const user = await models.User.fetchById(req.user.user_id, { withRelated: ['albums'] });
 
 	// Hämta användarens alla album
 	const allAlbums = user.related('albums');
 
 	// Plocka ut ett specifikt album genom att skriva ex. /1 i sökvägen för att få ut album med id 1.
-	const albumWithSpecificId = albums.find(album => album.id == validData.album_id);
+	const albumWithSpecificId = allAlbums.find(album => album.id == req.params.albumId);
 
 	if (!albumWithSpecificId) {
 		return res.status(404).send({
@@ -69,7 +68,7 @@ const addAlbum = async (req, res) => {
 	 // get only the validated data from the request
 	 const validData = matchedData(req);
 
-	 validData.user._id = req.user.user_id;
+	 validData.user_id = req.user.user_id;
  
 	 try {
 		 const album = await new models.Album(validData).save();
@@ -137,8 +136,6 @@ const addAlbum = async (req, res) => {
 	 }
  };
 
-
- 
  module.exports = {
 	 getAlbums,
 	 showAlbum,
