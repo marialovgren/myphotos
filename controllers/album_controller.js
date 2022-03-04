@@ -51,23 +51,25 @@ const showAlbum = async (req, res) => {
 		data: {
 			album: albumWithSpecificId,
 		},
-	 });
- };
+	});
+};
  
- /**
-  * Lägg till ett nytt album
-  *
-  * POST /albums
-  */
- const store = async (req, res) => {
+/**
+* Lägg till ett nytt album
+*
+* POST /albums
+*/
+const addAlbum = async (req, res) => {
 	 // check for any validation errors
-	 const errors = validationResult(req);
-	 if (!errors.isEmpty()) {
-		 return res.status(422).send({ status: 'fail', data: errors.array() });
-	 }
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).send({ status: 'fail', data: errors.array() });
+	}
  
 	 // get only the validated data from the request
 	 const validData = matchedData(req);
+
+	 validData.user._id = req.user.user_id;
  
 	 try {
 		 const album = await new models.Album(validData).save();
@@ -75,9 +77,7 @@ const showAlbum = async (req, res) => {
  
 		 res.send({
 			 status: 'success',
-			 data: {
-				 album,
-			 },
+			 data: album,
 		 });
  
 	 } catch (error) {
@@ -135,8 +135,12 @@ const showAlbum = async (req, res) => {
 		 });
 		 throw error;
 	 }
- }
+ };
+
+
  
  module.exports = {
 	 getAlbums,
+	 showAlbum,
+	 addAlbum,
  }
