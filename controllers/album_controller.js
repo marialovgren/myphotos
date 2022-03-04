@@ -17,7 +17,7 @@
 	 res.send({
 		 status: 'success',
 		 data: {
-			 album: all_albums
+			 albums: all_albums
 		 }
 	 });
  }
