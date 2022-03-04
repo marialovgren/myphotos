@@ -4,6 +4,13 @@ const auth = require('../middlewears/auth');
 const authController = require('../controllers/auth_controller');
 const userValidationRules = require('../validation/user');
 
+router.get('/', (req, res, next) => {
+    res.send({
+        success: true,
+        data: { msg: 'Welcome to my photo-app' },
+    });
+});
+
 /** Länkar till models */
 router.use('/albums', require('./album'));
 //router.use('/album', auth.validateJwtToken, require('./album'));
