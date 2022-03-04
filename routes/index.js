@@ -11,15 +11,18 @@ router.get('/', (req, res, next) => {
     });
 });
 
+// Registrera en ny användare 
+router.post('/register', userValidationRules.createRules, authController.register);
+
+// Logga in en befintlig användare
+router.post('/login', authController.login);
+
 /** Länkar till models */
 router.use('/albums', require('./album'));
 //router.use('/album', auth.validateJwtToken, require('./album'));
 //router.use('/photos', require('./photos'));
 // ** DENNA MÅSTE FUNKA FÖR ATT ROUTES/ALBUM SKA FUNKA         
 //router.use('/user', auth.validateJwtToken, require('./user')); 
-
-// register a new user
-router.post('/register', userValidationRules.createRules, authController.register);
 
 
 module.exports = router;
