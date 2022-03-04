@@ -3,28 +3,20 @@ const router = express.Router();
 const albumController = require('../controllers/album_controller');
 const albumValidationRules = require('../validation/album_validation');
 
-/* Hämta alla album */
+/* Hämta alla album till den inloggade användaren */
 // GET /albums
-router.get('/albums', albumController.index);
+router.get('/', albumController.getAlbums);
 
-/* Get a specific resource */
-router.get('/:albumId', albumController.show);
+/* Hämta ett specifikt album */
+// GET /albums/:albumId exempelvis /albums/1
+router.get('/:albumId', albumController.showAlbum);
 
 /* Lägg till ett album */
 // POST /albums
-router.post('/albums', albumValidationRules.createRules, albumController.store);
+router.post('/', albumValidationRules.createRules, albumController.addAlbum);
 
 /* Uppdatera ett album */
-// PUT /albums/:albumId
-router.put('/albums/:albumId', albumValidationRules.updateRules, albumController.update);
+// PUT /albums/:albumId exempelvis /albums/1
+router.put('/:albumId', albumValidationRules.updateRules, albumController.updateAlbum);
 
 module.exports = router;
-
-
-/* Lägg till ett album till den inloggade användaren */
-// POST /albums
-router.post('/albums', auth.validateJwtToken, profileValidationRules.addAlbumRules, profileController.addAlbum);
-
-/* Uppdatera ett album */
-// PUT /albums/:albumId
-router.put('/albums/:albumId', profileValidationRules.updateRules, profileController.updateAlbum);
