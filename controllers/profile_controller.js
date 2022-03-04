@@ -126,6 +126,7 @@ const addAlbum = async (req, res) => {
  }}
  
  module.exports = {
+    getProfile,
     getAlbums,
     addAlbum,
     updateAlbum,

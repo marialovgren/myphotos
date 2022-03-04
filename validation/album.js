@@ -2,15 +2,14 @@
 */
 
 const { body } = require('express-validator');
-const models = require('../models');
 
 /**
  * Regler för att lägga till ett nytt album
  * POST /albums
  * 
- * Required: title, album_id
+ * Required: title, 
  */
-const addAlbumRules = [
+const createRules = [
     body('title').exists().isLength({ min:3 }),
 ];
 
@@ -25,18 +24,6 @@ const updateRules = [
 ];
 
 module.exports = {
-    addAlbumRules,
+    createRules,
     updateRules
 };
-
-
-/* 
-body('album_id').exists().bail().custom(async value => {
-        const album = await new models.Album({ id: value }).fetch({ require: false });
-        if (!album) {
-            return Promise.reject(`Album with ID ${value} does not exist.`);
-        }
-
-        return Promise.resolve();
-    }),
-*/

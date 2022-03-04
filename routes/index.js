@@ -10,9 +10,10 @@ router.get('/', (req, res, next) => {
 });
 
 /** Länkar till models */
-router.use('/album', auth.validateJwtToken, require('./album'));
+router.use('/album', require('./album'));
+//router.use('/album', auth.validateJwtToken, require('./album'));
 //router.use('/photos', require('./photos'));
-// ** DENNA MÅSTE FUNKA FÖR ATT AOUTES/ALBUM SKA FUNKA         
+// ** DENNA MÅSTE FUNKA FÖR ATT ROUTES/ALBUM SKA FUNKA         
 //router.use('/user', auth.validateJwtToken, require('./user')); 
 
 // login a user and get a JWT 
