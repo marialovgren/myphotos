@@ -89,11 +89,11 @@ const addAlbum = async (req, res) => {
  }
  
  /**
-  * Update a specific resource
+  * Uppdatera ett album 
   *
   * PUT /albums/:albumId
   */
- const update = async (req, res) => {
+ const updateAlbum = async (req, res) => {
 	 const albumId = req.params.albumId;
  
 	 // make sure book exists
@@ -140,4 +140,5 @@ const addAlbum = async (req, res) => {
 	 getAlbums,
 	 showAlbum,
 	 addAlbum,
+	 updateAlbum,
  }
