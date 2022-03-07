@@ -53,13 +53,13 @@ const showPhoto = async (req, res) => {
 };
  
 /**
-* * Lägg till ett nytt album
+* * Lägg till ett nytt foto
 *
-* * POST /albums
+* * POST /photos
 */
-const addAlbum = async (req, res) => {
+const addPhoto = async (req, res) => {
 	// Hämta användaren
-	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
+	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['photos'] });
 
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -70,13 +70,15 @@ const addAlbum = async (req, res) => {
 	validData.user_id = req.user_model.user_id;
  
 	try {
-		const album = await new models.album_model(validData).save();
-		debug("Created new album successfully: %O", album);
+		const photo = await new models.photo_model(validData).save();
+		debug("Created new photo successfully: %O", photo);
 
 		res.send({
 			status: 'success',
 			data: {
-				title: album.get('title'),
+				title: photo.get('title'),
+                url: photo.get('url'),
+                comment: photo.get('url'),
 				user_id: user.id,
 				id: album.get('id'),
 			}
@@ -85,7 +87,7 @@ const addAlbum = async (req, res) => {
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when creating a new Album.',
+			message: 'Exception thrown in database when creating a new Photo.',
 		});
 		throw error;
 	}
