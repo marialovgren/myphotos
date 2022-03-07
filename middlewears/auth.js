@@ -1,6 +1,6 @@
-/** Här finns basic authentication middlewear och JWT */
+/** Här finns JWT */
 
-const debug = require('debug')('books:auth');
+const debug = require('debug')('myphotos:auth');
 const { user_model } = require('../models') 
 const jwt = require('jsonwebtoken');
 

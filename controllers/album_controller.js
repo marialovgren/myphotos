@@ -2,7 +2,7 @@
 * Album Controller
 */
 
-const debug = require('debug')('books:album_controller'); // ska det stå books????
+const debug = require('debug')('myphotos:album_controller'); // ska det stå books????
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
  
