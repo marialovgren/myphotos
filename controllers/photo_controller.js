@@ -94,22 +94,22 @@ const addPhoto = async (req, res) => {
 }
  
 /**
-* * Uppdatera ett album 
+* * Uppdatera ett foto 
 *
-* * PUT /albums/:albumId
+* * PUT /photos/:photoId
 */
-const updateAlbum = async (req, res) => {
+const updatePhoto = async (req, res) => {
 	// Hämta användaren 
-	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
+	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['photos'] });
 
-	const albumId = req.params.albumId;
+	const photoId = req.params.photoId;
  
-	const album = await new models.album_model({ id: albumId }).fetch({ require: false });
-	if (!album) {
-		debug("Album to update was not found. %o", { id: albumId });
+	const photo = await new models.photo_model({ id: photoId }).fetch({ require: false });
+	if (!photo) {
+		debug("Photo to update was not found. %o", { id: photoId });
 		res.status(404).send({
 			status: 'fail',
-			data: 'Album Not Found',
+			data: 'Photo Not Found',
 		});
 		return;
 	}
@@ -122,31 +122,33 @@ const updateAlbum = async (req, res) => {
 	const validData = matchedData(req);
  
 	try {
-		const updatedAlbum = await album.save(validData);
-		debug("Updated album successfully: %O", updatedAlbum);
+		const updatedPhoto = await photo.save(validData);
+		debug("Updated photo successfully: %O", updatedPhoto);
  
 		res.send({
 			status: 'success',
 			data: {
-				title: album.get('title'),
+				title: photo.get('title'),
+                url: photo.get('url'),
+                comment: photo.get('comment'),
 				user_id: user.id,
-				id: album.get('id'),
+				id: photo.get('id'),
 			},
 		});
- 
+
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: 'Exception thrown in database when updating a new album.',
+			message: 'Exception thrown in database when updating a photo.',
 		});
 		throw error;
 	}
 };
 
 module.exports = {
-	getAlbums,
-	showAlbum,
-	addAlbum,
-	updateAlbum,
+	getPhotos,
+    showPhoto,
+    addPhoto,
+    updatePhoto,
 }
 
