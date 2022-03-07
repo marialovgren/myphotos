@@ -39,7 +39,7 @@ const jwt = require('jsonwebtoken');
 	// signera jwt och få fram access-token
 	const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
 
-	// svara me access-token
+	// svara med access-token
 	return res.send({
 		status: 'success',
 		data: {

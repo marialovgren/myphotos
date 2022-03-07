@@ -35,10 +35,11 @@ const showPhoto = async (req, res) => {
 	const photoWithSpecificId = allPhotos.find(photo => photo.id == req.params.photoId);
 
 	if (!photoWithSpecificId) {
-		return res.status(404).send({
-			status: 'fail',
+		res.status(404).send({
+			status: 'error',
 			message: 'Photo with that ID was not found',
 		});
+		return;
 	}
 
 	res.send({

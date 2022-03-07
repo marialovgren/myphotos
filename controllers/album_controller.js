@@ -37,7 +37,7 @@ const showAlbum = async (req, res) => {
 
 	if (!albumWithSpecificId) {
 		return res.status(404).send({
-			status: 'fail',
+			status: 'error',
 			message: 'Album with that ID was not found',
 		});
 	}
