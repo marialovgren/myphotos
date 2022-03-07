@@ -8,20 +8,19 @@ const models = require('../models');
 const jwt = require('jsonwebtoken');
  
 /**
+ * * Login a user, sign a JWT token and return it
  * 
- * Login a user, sign a JWT token and return it
- * 
- * POST /login
+ * * POST /login
  *  {
  *   "email": "",
  *   "password": ""
- * }
+ * 	}
  */
  const login = async (req, res) => {
-	// destructure username and password from request body
+	// plocka ut 'email' och 'password' från req.body
 	const { email, password } = req.body;
 
-	// login the user
+	// logga in användaren 
 	const user = await models.user_model.login(email, password);
 	if (!user) {
 		return res.status(401).send({
@@ -30,47 +29,44 @@ const jwt = require('jsonwebtoken');
 		});
 	}
 
-	// construct jwt payload
+	// jwt payload
 	const payload = {
 		sub: user.get('email'),
 		user_id: user.get('id'),
 		name: user.get('first_name') + ' ' + user.get('last_name'),
 	}
 
-	// sign payload and get access-token
+	// signera jwt och få fram access-token
 	const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
 
-	// respond with the access-token
+	// svara me access-token
 	return res.send({
 		status: 'success',
 		data: {
 			access_token,
-//			access_token: access_token,
 		}
 	});
 }
 
 /**
-* Register a new user
+* * Register a new user
 *
-* POST /register
+* * POST /register
 */
 const register = async (req, res) => {
-    // check for any validation errors
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).send({ status: 'fail', data: errors.array() });
 	}
 
-	// get only the validated data from the request
+	// spara bara den validerade datan i 'validData'
 	const validData = matchedData(req);
 
 	console.log("The validated data:", validData);
 
-    // generate a hash of 'validData.password'
-    // and overwrite 'validData.password' with the generated hash
+	// hasha lösenordet och spara det nya hashade lösenorder i 'validData.password'
     try {
-        validData.password = await bcrypt.hash(validData.password, models.User.hashSaltRounds);
+        validData.password = await bcrypt.hash(validData.password, models.user_model.hashSaltRounds);
 
     } catch (error) {
         res.status(500).send({
@@ -83,7 +79,6 @@ const register = async (req, res) => {
 	try {
 		const user = await new models.user_model(validData).save();
 		debug("Created new user successfully: %O", user);
-
 		res.send({
 			status: 'success',
 			data: {
