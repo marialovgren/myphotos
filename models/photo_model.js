@@ -3,14 +3,18 @@
  */
 
  module.exports = (bookshelf) => {
-    return bookshelf.model('Photo', {
+    return bookshelf.model('photo_model', {
         tableName: 'photos',
         users() {
-            return this.belongsTo('User');
+            return this.belongsTo('user_model');
         }, 
         tableName: 'photos',
         albums() {
-            return this.hasMany('Album');
-        }
+            return this.belongsToMany('album_model');
+        },
+
+        async fetchById(id, fetchOptions = {}) {
+			return await new this({ id }).fetch(fetchOptions);
+		}, 
     });
 };

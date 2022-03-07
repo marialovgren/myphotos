@@ -68,7 +68,7 @@ const addPhoto = async (req, res) => {
 	const validData = matchedData(req);
 
 	validData.user_id = req.user_model.user_id;
- 
+
 	try {
 		const photo = await new models.photo_model(validData).save();
 		debug("Created new photo successfully: %O", photo);
@@ -78,9 +78,9 @@ const addPhoto = async (req, res) => {
 			data: {
 				title: photo.get('title'),
                 url: photo.get('url'),
-                comment: photo.get('url'),
+                comment: photo.get('comment'),
 				user_id: user.id,
-				id: album.get('id'),
+				id: photo.get('id'),
 			}
 		});
  

@@ -9,7 +9,7 @@ router.get('/', photoController.getPhotos);
 
 /* Hämta ett specifikt foto */
 // GET /photos/:photoId exempelvis /photos/1
-router.get('/:photosId', photoController.showPhoto);
+router.get('/:photoId', photoController.showPhoto);
 
 /* Lägg till ett foto */
 // POST /photos

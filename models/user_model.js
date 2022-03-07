@@ -7,11 +7,11 @@ module.exports = (bookshelf) => {
 	return bookshelf.model('user_model', {
 		tableName: 'users',
 		albums() {
-			return this.hasMany('Album');
+			return this.hasMany('album_model');
 		}, 
 		tableName: 'users',
 		photos() {
-			return this.hasMany('Photos');
+			return this.hasMany('photo_model');
 		}
 	}, {
 		hashSaltRounds: 10,
