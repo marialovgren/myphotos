@@ -12,7 +12,7 @@ const models = require('../models');
 * GET /albums
 */
 const getAlbums = async (req, res) => {
-	const user = await models.User.fetchById(req.user.user_id, {
+	const user = await models.user_model.fetchById(req.user.user_id, {
 		withRelated: ['albums'] });
  
 	res.status(200).send({
@@ -28,7 +28,7 @@ const getAlbums = async (req, res) => {
 * GET /albums/:albumId
 */
 const showAlbum = async (req, res) => {
-	const user = await models.User.fetchById(req.user.user_id, { withRelated: ['albums'] });
+	const user = await models.user_model.fetchById(req.user.user_id, { withRelated: ['albums'] });
 
 	// Hämta användarens alla album
 	const allAlbums = user.related('albums');
@@ -71,7 +71,7 @@ const addAlbum = async (req, res) => {
 	 validData.user_id = req.user.user_id;
  
 	 try {
-		 const album = await new models.Album(validData).save();
+		 const album = await new models.album_model(validData).save();
 		 debug("Created new album successfully: %O", album);
  
 		 res.send({
@@ -97,7 +97,7 @@ const addAlbum = async (req, res) => {
 	 const albumId = req.params.albumId;
  
 	 // make sure book exists
-	 const album = await new models.Album({ id: albumId }).fetch({ require: false });
+	 const album = await new models.album_model({ id: albumId }).fetch({ require: false });
 	 if (!album) {
 		 debug("Album to update was not found. %o", { id: albumId });
 		 res.status(404).send({
