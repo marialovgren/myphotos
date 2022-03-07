@@ -2,24 +2,22 @@
 * Album Controller
 */
 
-const debug = require('debug')('myphotos:album_controller'); // ska det stå books????
+const debug = require('debug')('myphotos:album_controller'); 
 const { matchedData, validationResult } = require('express-validator');
 const models = require('../models');
  
 /**
-* Hämta alla album till den inloggade användaren 
+* * Hämta alla album till den inloggade användaren 
 *
 * GET /albums
 */
 const getAlbums = async (req, res) => {
-	const user = await models.user_model.fetchById(req.user.user_id, {
+	const user = await models.user_model.fetchById(req.user_model.user_id, {
 		withRelated: ['albums'] });
  
 	res.status(200).send({
 		 status: 'success',
-		 data: {
-			 albums: user.related('albums'),
-		 }
+		 data: user.related('albums')
 	 });
  };
  
@@ -28,7 +26,7 @@ const getAlbums = async (req, res) => {
 * GET /albums/:albumId
 */
 const showAlbum = async (req, res) => {
-	const user = await models.user_model.fetchById(req.user.user_id, { withRelated: ['albums'] });
+	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
 
 	// Hämta användarens alla album
 	const allAlbums = user.related('albums');
@@ -48,8 +46,10 @@ const showAlbum = async (req, res) => {
 	res.send({
 		status: 'success',
 		data: {
-			album: albumWithSpecificId,
-		},
+			id: albumWithSpecificId.id,
+			title: albumWithSpecificId.get('title'),
+			// här ska fotona i detta albumet visas
+		}
 	});
 };
  
@@ -94,9 +94,11 @@ const addAlbum = async (req, res) => {
   * PUT /albums/:albumId
   */
  const updateAlbum = async (req, res) => {
+	const user = await models.user_model.fetchById(req.user_model.user_id, {
+		withRelated: ['albums'] });
+		
 	 const albumId = req.params.albumId;
  
-	 // make sure book exists
 	 const album = await new models.album_model({ id: albumId }).fetch({ require: false });
 	 if (!album) {
 		 debug("Album to update was not found. %o", { id: albumId });
@@ -107,13 +109,11 @@ const addAlbum = async (req, res) => {
 		 return;
 	 }
  
-	 // check for any validation errors
 	 const errors = validationResult(req);
 	 if (!errors.isEmpty()) {
 		 return res.status(422).send({ status: 'fail', data: errors.array() });
 	 }
  
-	 // get only the validated data from the request
 	 const validData = matchedData(req);
  
 	 try {
@@ -123,7 +123,9 @@ const addAlbum = async (req, res) => {
 		 res.send({
 			 status: 'success',
 			 data: {
-				 album,
+				title: album.get('title'),
+				user_id: user.id,
+				id: album.get('id'),
 			 },
 		 });
  
