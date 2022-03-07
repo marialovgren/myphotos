@@ -20,7 +20,7 @@ router.post('/login', authController.login);
 /** Länkar till models */
 router.use(auth.validateJwtToken);
 router.use('/albums', require('./album_route'));
-//router.use('/photos', require('./photo_route'));
+router.use('/photos', require('./photo_route'));
 
 module.exports = router;
 
