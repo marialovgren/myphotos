@@ -22,7 +22,7 @@ const jwt = require('jsonwebtoken');
 	const { email, password } = req.body;
 
 	// login the user
-	const user = await models.User.login(email, password);
+	const user = await models.user_model.login(email, password);
 	if (!user) {
 		return res.status(401).send({
 			status: 'fail',
@@ -81,7 +81,7 @@ const register = async (req, res) => {
     }
 
 	try {
-		const user = await new models.User(validData).save();
+		const user = await new models.user_model(validData).save();
 		debug("Created new user successfully: %O", user);
 
 		res.send({
