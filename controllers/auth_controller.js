@@ -8,7 +8,7 @@ const models = require('../models');
 const jwt = require('jsonwebtoken');
  
 /**
- * * Login a user, sign a JWT token and return it
+ * * Logga in, signera med JWT och returnera token
  * 
  * * POST /login
  *  {
@@ -49,7 +49,7 @@ const jwt = require('jsonwebtoken');
 }
 
 /**
-* * Register a new user
+* * Registrera en ny användare
 *
 * * POST /register
 */
