@@ -8,15 +8,15 @@ const models = require('../models');
 const jwt = require('jsonwebtoken');
  
 /**
- * * Logga in, signera med JWT och returnera token
- * 
- * * POST /login
- *  {
- *   "email": "",
- *   "password": ""
- * 	}
- */
- const login = async (req, res) => {
+* * Logga in, signera med JWT och returnera token
+* 
+* * POST /login
+*  {
+*   "email": "",
+*   "password": ""
+* 	}
+*/
+const login = async (req, res) => {
 	// plocka ut 'email' och 'password' från req.body
 	const { email, password } = req.body;
 

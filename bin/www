@@ -1,6 +1,6 @@
 /**
- *  * Denna filen startar upp servern
- */
+* * Denna filen startar upp servern
+*/
 
 require('dotenv').config();
 

@@ -1,8 +1,8 @@
 /**
- * Album model
- */
+* Album model
+*/
 
- module.exports = (bookshelf) => {
+module.exports = (bookshelf) => {
     return bookshelf.model('album_model', {
         tableName: 'albums',
         users() {

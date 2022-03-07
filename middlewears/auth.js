@@ -5,8 +5,8 @@ const { user_model } = require('../models')
 const jwt = require('jsonwebtoken');
 
 /**
- * * Validera JWT token
- */
+* * Validera JWT token
+*/
 const validateJwtToken = (req, res, next) => {
     // Om det inte finns någon 'Authorization header' så faila med statuskod 401
     if (!req.headers.authorization) {

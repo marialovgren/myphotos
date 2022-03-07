@@ -1,8 +1,8 @@
 /**
- * Photo model
- */
+* Photo model
+*/
 
- module.exports = (bookshelf) => {
+module.exports = (bookshelf) => {
     return bookshelf.model('photo_model', {
         tableName: 'photos',
         users() {
