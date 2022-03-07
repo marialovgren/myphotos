@@ -67,20 +67,14 @@ const addAlbum = async (req, res) => {
 	if (!errors.isEmpty()) {
 		return res.status(422).send({ status: 'fail', data: errors.array() });
 	}
- 
-	 const validData = matchedData(req);
+	const validData = matchedData(req);
 
-	 validData.user_id = req.user_model.user_id;
+	validData.user_id = req.user_model.user_id;
  
-	 try {
-		 const album = await new models.album_model(validData).save();
-		 debug("Created new album successfully: %O", album);
+	try {
+		const album = await new models.album_model(validData).save();
+		debug("Created new album successfully: %O", album);
 
-		// om albumet redan finns så ska appen returnera fail
-		if (album) {
-			return res.status(422).send({ status: 'fail', message: 'Album already exsists'});
-		}
- 
 		res.send({
 			status: 'success',
 			data: {

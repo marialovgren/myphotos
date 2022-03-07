@@ -2,6 +2,7 @@
 */
 
 const { body } = require('express-validator');
+const models = require('../models');
 
 /**
  * Regler för att lägga till ett nytt album
@@ -10,7 +11,13 @@ const { body } = require('express-validator');
  * Required: title, 
  */
 const createRules = [
-    body('title').exists().isLength({ min:3 }),
+    body('title').exists().isLength({ min:3 }).custom(async value => {
+		const title = await new models.album_model({ title: value }).fetch({ require: false });
+		if (title) {
+			return Promise.reject("Title already exists.");
+		}
+		return Promise.resolve();
+	}),
 ];
 
 /**
