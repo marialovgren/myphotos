@@ -26,6 +26,7 @@ const getAlbums = async (req, res) => {
 * GET /albums/:albumId
 */
 const showAlbum = async (req, res) => {
+	// Hämta användaren
 	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
 
 	// Hämta användarens alla album
@@ -54,96 +55,106 @@ const showAlbum = async (req, res) => {
 };
  
 /**
-* Lägg till ett nytt album
+* * Lägg till ett nytt album
 *
-* POST /albums
+* * POST /albums
 */
 const addAlbum = async (req, res) => {
-	 // check for any validation errors
+	// Hämta användaren
+	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
+
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).send({ status: 'fail', data: errors.array() });
 	}
  
-	 // get only the validated data from the request
 	 const validData = matchedData(req);
 
-	 validData.user_id = req.user.user_id;
+	 validData.user_id = req.user_model.user_id;
  
 	 try {
 		 const album = await new models.album_model(validData).save();
 		 debug("Created new album successfully: %O", album);
+
+		// om albumet redan finns så ska appen returnera fail
+		if (album) {
+			return res.status(422).send({ status: 'fail', message: 'Album already exsists'});
+		}
  
-		 res.send({
-			 status: 'success',
-			 data: album,
-		 });
- 
-	 } catch (error) {
-		 res.status(500).send({
-			 status: 'error',
-			 message: 'Exception thrown in database when creating a new Album.',
-		 });
-		 throw error;
-	 }
- }
- 
- /**
-  * Uppdatera ett album 
-  *
-  * PUT /albums/:albumId
-  */
- const updateAlbum = async (req, res) => {
-	const user = await models.user_model.fetchById(req.user_model.user_id, {
-		withRelated: ['albums'] });
-		
-	 const albumId = req.params.albumId;
- 
-	 const album = await new models.album_model({ id: albumId }).fetch({ require: false });
-	 if (!album) {
-		 debug("Album to update was not found. %o", { id: albumId });
-		 res.status(404).send({
-			 status: 'fail',
-			 data: 'Album Not Found',
-		 });
-		 return;
-	 }
- 
-	 const errors = validationResult(req);
-	 if (!errors.isEmpty()) {
-		 return res.status(422).send({ status: 'fail', data: errors.array() });
-	 }
- 
-	 const validData = matchedData(req);
- 
-	 try {
-		 const updatedAlbum = await album.save(validData);
-		 debug("Updated album successfully: %O", updatedAlbum);
- 
-		 res.send({
-			 status: 'success',
-			 data: {
+		res.send({
+			status: 'success',
+			data: {
 				title: album.get('title'),
 				user_id: user.id,
 				id: album.get('id'),
-			 },
-		 });
+			}
+		});
  
-	 } catch (error) {
-		 res.status(500).send({
-			 status: 'error',
-			 message: 'Exception thrown in database when updating a new album.',
-		 });
-		 throw error;
-	 }
- };
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when creating a new Album.',
+		});
+		throw error;
+	}
+}
+ 
+/**
+* * Uppdatera ett album 
+*
+* * PUT /albums/:albumId
+*/
+const updateAlbum = async (req, res) => {
+	// Hämta användaren 
+	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
 
- module.exports = {
-	 getAlbums,
-	 showAlbum,
-	 addAlbum,
-	 updateAlbum,
- }
+	const albumId = req.params.albumId;
+ 
+	const album = await new models.album_model({ id: albumId }).fetch({ require: false });
+	if (!album) {
+		debug("Album to update was not found. %o", { id: albumId });
+		res.status(404).send({
+			status: 'fail',
+			data: 'Album Not Found',
+		});
+		return;
+	}
+ 
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).send({ status: 'fail', data: errors.array() });
+	}
+ 
+	const validData = matchedData(req);
+ 
+	try {
+		const updatedAlbum = await album.save(validData);
+		debug("Updated album successfully: %O", updatedAlbum);
+ 
+		res.send({
+			status: 'success',
+			data: {
+				title: album.get('title'),
+				user_id: user.id,
+				id: album.get('id'),
+			},
+		});
+ 
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when updating a new album.',
+		});
+		throw error;
+	}
+};
+
+module.exports = {
+	getAlbums,
+	showAlbum,
+	addAlbum,
+	updateAlbum,
+}
 
  /* FRÅN PROFILE_CONTROLLER
 
