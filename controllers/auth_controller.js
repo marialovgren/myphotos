@@ -76,13 +76,17 @@ const register = async (req, res) => {
         throw error;
     }
 
+	// returnera den nya användaren UTAN lösenord
 	try {
 		const user = await new models.user_model(validData).save();
+
 		debug("Created new user successfully: %O", user);
 		res.send({
 			status: 'success',
 			data: {
-				user,
+				email: user.get('email'),
+				first_name: user.get('first_name'),
+				last_name: user.get('last_name'),
 			},
 		});
 
