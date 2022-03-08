@@ -42,15 +42,16 @@ const showAlbum = async (req, res) => {
 		});
 	}
 	
-	//const photosInThisAlbum = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
-	//const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
+	const photosInThisAlbum = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
+	const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
  
 	res.send({
 		status: 'success',
-		data: {
-			id: albumWithSpecificId.id,
+		data: { 
+			id: albumWithSpecificId.get('id'),
 			title: albumWithSpecificId.get('title'),
-			//photosInThisAlbum,
+			photosInThisAlbum,
+			userPhoto,
 		}
 	});
 };
@@ -169,6 +170,7 @@ const addPhotoToAlbum = async (req, res) => {
 	// Hämta ut det efterfrågade albumet (kommer från params)
 	const userAlbum = user.related('albums').find(album => album.id == req.params.albumId);
 
+	// Hämta endast foton som tillhör den inloggade användaren 
 	const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
 
 	// Kolla ifall fotot redan finns i albumet (DETTA FUNKAR INTE!!!!)
