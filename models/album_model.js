@@ -10,11 +10,12 @@ module.exports = (bookshelf) => {
         }, 
         tableName: 'albums',
         photos() {
-            return this.hasMany('photo_model');
+            return this.belongsToMany('photo_model'); 
         },
-
+    }, {
         async fetchById(id, fetchOptions = {}) {
-			return await new this({ id }).fetch(fetchOptions);
-		}, 
-    });
+            return await new this({ id }).fetch(fetchOptions);
+        }
+    }, 
+    );
 };

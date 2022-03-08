@@ -30,7 +30,26 @@ const updateRules = [
     body('title').exists().isString().isLength({ min:3 }),
 ];
 
+/**
+  * Regler för att lägga till ett foto i ett album
+  *
+  * Required: photo_id
+  */
+ const addPhotoToAlbumRules = [
+	body('photo_id').exists().isInt().bail().custom(async value => {
+		const photo = await new models.photo_model({ id: value }).fetch({ require: false });
+		if (!photo) {
+			return Promise.reject(`Photo with ID ${value} does not exist.`);
+		}
+
+		return Promise.resolve();
+	}),
+];
+
 module.exports = {
     createRules,
-    updateRules
+    updateRules,
+	addPhotoToAlbumRules,
 };
+
+

@@ -12,9 +12,10 @@ module.exports = (bookshelf) => {
         albums() {
             return this.belongsToMany('album_model');
         },
-
+    }, {
         async fetchById(id, fetchOptions = {}) {
-			return await new this({ id }).fetch(fetchOptions);
-		}, 
-    });
+            return await new this({ id }).fetch(fetchOptions);
+        }
+    }, 
+    );
 };

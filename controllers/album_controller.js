@@ -41,15 +41,16 @@ const showAlbum = async (req, res) => {
 			message: 'Album with that ID was not found',
 		});
 	}
-
-	// Här ska jag skriva kod för att kunna visa foton som tillhör albumet med det efterfrågade ID
+	
+	//const photosInThisAlbum = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
+	//const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
  
 	res.send({
 		status: 'success',
 		data: {
 			id: albumWithSpecificId.id,
 			title: albumWithSpecificId.get('title'),
-			// här ska fotona i detta albumet visas
+			//photosInThisAlbum,
 		}
 	});
 };
@@ -143,138 +144,74 @@ const updateAlbum = async (req, res) => {
 	}
 };
 
+/**
+* * Lägg till ett foto i ett album
+*
+* * POST /albums/:albumId/photos
+*/
+
+const addPhotoToAlbum = async (req, res) => {
+	// kolla efter validerings error
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).send({ status: 'fail', data: errors.array() });
+	}
+
+	// Spara bara det jag efterfrågat i validData
+	const validData = matchedData(req);
+	
+	// Hämta relationen till användarens album
+	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
+
+	// Hämta ut relationen mellan albumet och fotona
+	const album = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
+
+	// Hämta ut det efterfrågade albumet (kommer från params)
+	const userAlbum = user.related('albums').find(album => album.id == req.params.albumId);
+
+	const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
+
+	// Kolla ifall fotot redan finns i albumet (DETTA FUNKAR INTE!!!!)
+	const existing_photo = album.related('photos').find(photo => photo.id == validData.photo_id);
+
+	// Finns fotot redan; bail
+	if (existing_photo) {
+		return res.send({
+			status: 'fail',
+			data: 'Photo already exists.',
+		});
+	}
+
+	// Om det inte är användarens album; bail
+	if (!userAlbum || userPhoto) {
+		return res.send({
+			status: 'fail',
+			data: 'Album does not belong to user',
+		});
+	}
+
+	try {
+		album.photos().attach(validData.photo_id);
+
+		res.send({
+			status: 'success',
+			data: null,
+		});
+
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when adding a photo to an album.',
+		});
+		throw error;	
+}};
+
 module.exports = {
 	getAlbums,
 	showAlbum,
 	addAlbum,
 	updateAlbum,
+	addPhotoToAlbum,
 }
 
- /* FRÅN PROFILE_CONTROLLER
-
-  const bcrypt = require('bcrypt');
-  const debug = require('debug')('books:profile_controller');
-  const { matchedData, validationResult} = require('express-validator');
-  const { User } = require('../models');
-  
-
- //Hämta den inloggade användarens album och foton
  
- //GET /user
- 
- const getProfile = async (req, res) => {
-  
-	 const user = await User.fetchById(req.user.user_id, { withRelated: ['albums', 'photos'] });
-  
-	 res.status(200).send({
-		 status: 'success',
-		 data: {
-			 albums: user.related('albums'),
-			 photos: user.related('photos')
-		 }
-	 });
- }
- 
-
- const addAlbum = async (req, res) => {
-	 const user = await User.fetchById(req.user.user_id);
-  
-	 // check for any validation errors
-	 const errors = validationResult(req);
-	 if (!errors.isEmpty()) {
-		 return res.status(422).send({ status: 'fail', data: errors.array() });
-	 }
-  
-	 // get only the validated data from the request
-	 const validData = matchedData(req);
-  
-	 // lazy-load book relationship
-	 await user.load('albums');
-  
-	 // get the user's albums
-	 const albums = user.related('albums');
-  
-	 // check if album is already in the user's list of albums
-	 const existing_album = albums.find(album => album.id == validData.album_id);
-  
-	 // if it already exists, bail
-	 if (existing_album) {
-		 return res.send({
-			 status: 'fail',
-			 data: 'Album already exists.',
-		 });
-	 }
-  
-	 try {
-		 const result = await user.albums().attach(validData.album_id);
-		 debug("Added album to user successfully: %O", result);
-  
-		 res.send({
-			 status: 'success',
-			 data: null,
-		 });
-  
-	 } catch (error) {
-		 res.status(500).send({
-			 status: 'error',
-			 message: 'Exception thrown in database when adding an album to a user.',
-		 });
-		 throw error;
- }}
-
-   //Add an album to the authenticated user
-   
-   const add = async (req, res) => {
-	  const user = await User.fetchById(req.user.user_id);
-  
-	  // check for any validation errors
-	  const errors = validationResult(req);
-	  if (!errors.isEmpty()) {
-		  return res.status(422).send({ status: 'fail', data: errors.array() });
-	  }
-  
-	  // get only the validated data from the request
-	  const validData = matchedData(req);
-  
-	  // lazy-load book relationship
-	  await user.load('books');
-  
-	  // get the user's books
-	  const books = user.related('books');
-  
-	  // check if book is already in the user's list of books
-	  const existing_book = books.find(book => book.id == validData.book_id);
-  
-	  // if it already exists, bail
-	  if (existing_book) {
-		  return res.send({
-			  status: 'fail',
-			  data: 'Book already exists.',
-		  });
-	  }
-  
-	  try {
-		  const result = await user.books().attach(validData.book_id);
-		  debug("Added book to user successfully: %O", result);
-  
-		  res.send({
-			  status: 'success',
-			  data: null,
-		  });
-  
-	  } catch (error) {
-		  res.status(500).send({
-			  status: 'error',
-			  message: 'Exception thrown in database when adding a book to a user.',
-		  });
-		  throw error;
-	  
-  }}
-  
-  module.exports = {
-	 getProfile,
-	 getAlbums,
-	 addAlbum,
-	 updateAlbum,
-  }
-  */
