@@ -22,7 +22,8 @@ const getAlbums = async (req, res) => {
  };
  
 /**
-* Hämta ett specifikt album 
+* * Hämta ett specifikt album 
+*
 * GET /albums/:albumId
 */
 const showAlbum = async (req, res) => {
@@ -43,16 +44,13 @@ const showAlbum = async (req, res) => {
 	}
 	
 	const photosInThisAlbum = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
-
-	const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
  
-	res.send({
+	res.status(200).send({
 		status: 'success',
 		data: { 
 			id: albumWithSpecificId.get('id'),
 			title: albumWithSpecificId.get('title'),
-			photosInThisAlbum,
-			
+			photosInThisAlbum
 		}
 	});
 };
@@ -128,7 +126,7 @@ const updateAlbum = async (req, res) => {
 		const updatedAlbum = await album.save(validData);
 		debug("Updated album successfully: %O", updatedAlbum);
  
-		res.send({
+		res.status(200).send({
 			status: 'success',
 			data: {
 				title: album.get('title'),
@@ -168,29 +166,35 @@ const addPhotoToAlbum = async (req, res) => {
 	// Hämta ut relationen mellan albumet och fotona
 	const album = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
 
-	// * ersätta denna med raden ovanför??????
-	// const album = user.related('album');
-
 	// Hämta ut det efterfrågade albumet (kommer från params)
 	const userAlbum = user.related('albums').find(album => album.id == req.params.albumId);
 
 	// Hämta endast foton som tillhör den inloggade användaren 
 	const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
 
-	// Kolla ifall fotot redan finns i albumet (DETTA FUNKAR INTE!!!!)
+	// Kolla ifall fotot redan finns i albumet
 	const existing_photo = album.related('photos').find(photo => photo.id == validData.photo_id);
 
 	// Finns fotot redan; bail
 	if (existing_photo) {
-		return res.send({
+		return res.status(404).send({
 			status: 'fail',
 			data: 'Photo already exists.',
 		});
 	}
 
+	if (!album) {
+		debug("Album to update was not found. %o", { id: album });
+		res.status(404).send({
+			status: 'fail',
+			data: 'Album Not Found',
+		});
+		return;
+	}
+
 	// Om det inte är användarens album eller foto; bail
 	if (!userAlbum || !userPhoto) {
-		return res.send({
+		return res.status(401).send({
 			status: 'fail',
 			data: 'Album or Photo does not belong to user',
 		});
@@ -204,7 +208,7 @@ const addPhotoToAlbum = async (req, res) => {
 		album.photos().attach(validData.photo_id);
 		*/
 
-		res.send({
+		res.status(200).send({
 			status: 'success',
 			data: null,
 		});
