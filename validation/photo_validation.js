@@ -5,12 +5,12 @@ const { body } = require('express-validator');
 const models = require('../models');
 
 /**
- * * Regler för att lägga till ett nytt foto
- * 
- * * POST /photos
- * 
- * Required: title, url
- */
+* * Regler för att lägga till ett nytt foto
+* 
+* POST /photos
+* 
+* Required: title, url
+*/
 const createRules = [
     body('title').exists().isString().isLength({ min:3 }).custom(async value => {
 		const title = await new models.photo_model({ title: value }).fetch({ require: false });
@@ -24,10 +24,10 @@ const createRules = [
 ];
 
 /**
- * * Regler för att uppdatera ett foto
- * 
- * * PUT /photos/:photoId
- */
+* * Regler för att uppdatera ett foto
+* 
+* PUT /photos/:photoId
+*/
 const updateRules = [
     body('title').optional().isString().isLength({ min:3 }),
     body('url').optional().isURL().isString(),

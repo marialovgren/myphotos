@@ -4,6 +4,13 @@
 const { body } = require('express-validator');
 const models = require('../models');
 
+/**
+* * Regler för att registrera en användare
+* 
+* POST /register
+* 
+* Required: email, password, first_name, last_name
+*/
 const createRules = [
 	body('email').exists().isEmail().isString().custom(async value => {
 		const user = await new models.user_model({ email: value }).fetch({ require: false });
