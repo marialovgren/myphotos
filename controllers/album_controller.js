@@ -43,6 +43,7 @@ const showAlbum = async (req, res) => {
 	}
 	
 	const photosInThisAlbum = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
+
 	const userPhoto = user.related('photos').find(photo => photo.id == validData.photo_id);
  
 	res.send({
@@ -51,7 +52,7 @@ const showAlbum = async (req, res) => {
 			id: albumWithSpecificId.get('id'),
 			title: albumWithSpecificId.get('title'),
 			photosInThisAlbum,
-			userPhoto,
+			
 		}
 	});
 };
@@ -167,6 +168,9 @@ const addPhotoToAlbum = async (req, res) => {
 	// Hämta ut relationen mellan albumet och fotona
 	const album = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
 
+	// * ersätta denna med raden ovanför??????
+	// const album = user.related('album');
+
 	// Hämta ut det efterfrågade albumet (kommer från params)
 	const userAlbum = user.related('albums').find(album => album.id == req.params.albumId);
 
@@ -184,16 +188,21 @@ const addPhotoToAlbum = async (req, res) => {
 		});
 	}
 
-	// Om det inte är användarens album; bail
-	if (!userAlbum || userPhoto) {
+	// Om det inte är användarens album eller foto; bail
+	if (!userAlbum || !userPhoto) {
 		return res.send({
 			status: 'fail',
-			data: 'Album does not belong to user',
+			data: 'Album or Photo does not belong to user',
 		});
 	}
 
 	try {
+		const result = await userAlbum.photos().attach(validData.photo_id);
+		debug("Added photo to Album successfully: %O", result, result.length);
+
+		/*
 		album.photos().attach(validData.photo_id);
+		*/
 
 		res.send({
 			status: 'success',
