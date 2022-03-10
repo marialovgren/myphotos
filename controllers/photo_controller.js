@@ -21,7 +21,8 @@ const getPhotos = async (req, res) => {
  };
  
 /**
-* Hämta ett specifikt foto 
+* * Hämta ett specifikt foto 
+*
 * GET /photos/:photoId
 */
 const showPhoto = async (req, res) => {
@@ -42,7 +43,7 @@ const showPhoto = async (req, res) => {
 		return;
 	}
 
-	res.send({
+	res.status(200).send({
 		status: 'success',
 		data: {
 			id: photoWithSpecificId.id,
@@ -74,7 +75,7 @@ const addPhoto = async (req, res) => {
 		const photo = await new models.photo_model(validData).save();
 		debug("Created new photo successfully: %O", photo);
 
-		res.send({
+		res.status(200).send({
 			status: 'success',
 			data: {
 				title: photo.get('title'),
@@ -126,7 +127,7 @@ const updatePhoto = async (req, res) => {
 		const updatedPhoto = await photo.save(validData);
 		debug("Updated photo successfully: %O", updatedPhoto);
  
-		res.send({
+		res.status(200).send({
 			status: 'success',
 			data: {
 				title: photo.get('title'),
