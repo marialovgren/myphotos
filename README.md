@@ -1,6 +1,6 @@
 # myphotos (api)
 
-My Photo REST API https://maria-lovgren-myphotos-api.herokuapp.com/
+My Photo REST API https://gentle-falls-67997.herokuapp.com/
 
 ### Languages used:
 
