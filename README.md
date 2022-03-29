@@ -46,4 +46,4 @@ My Photo REST API https://gentle-falls-67997.herokuapp.com/
 
 ## Printscreen
 
-<img src="https://github.com/marialovgren/myphotos/blob/master/printscreen/Screenshot%202022-03-10%20at%2010.36.30.png?raw=true" width=100%>
+<img src="https://github.com/marialovgren/myphotos/blob/master/printscreen/Screenshot%202022-03-29%20at%2010.58.23.png" width=100%>
