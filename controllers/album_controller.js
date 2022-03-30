@@ -161,7 +161,7 @@ const addPhotoToAlbum = async (req, res) => {
 	const validData = matchedData(req);
 	
 	// Hämta relationen till användarens album
-	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums'] });
+	const user = await models.user_model.fetchById(req.user_model.user_id, { withRelated: ['albums', 'photos'] });
 
 	// Hämta ut relationen mellan albumet och fotona
 	const album = await models.album_model.fetchById(req.params.albumId, { withRelated: ['photos'] });
