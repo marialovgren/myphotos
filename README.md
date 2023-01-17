@@ -1,5 +1,6 @@
 # myphotos (api)
 
+** The project was hosted on Heroku but since Heroku have removed the free package, my project isn´t hosted there any longer **
 My Photo REST API https://gentle-falls-67997.herokuapp.com/
 
 ### Languages used:
